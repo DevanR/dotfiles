@@ -63,3 +63,15 @@ require('nvim-autopairs').setup({
   enable_check_bracket_line = true,
   enable_bracket_in_quote = true,
 })
+
+-- Solarized theme configuration
+vim.g.solarized_italic_comments = true
+vim.g.solarized_italic_keywords = true
+vim.g.solarized_italic_functions = true
+vim.g.solarized_italic_variables = false
+vim.g.solarized_contrast = true
+vim.g.solarized_borders = false
+vim.g.solarized_disable_background = false
+
+-- Load the colorscheme
+vim.cmd([[colorscheme solarized]])

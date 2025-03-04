@@ -28,7 +28,7 @@ Plug 'tpope/vim-fugitive'            " Git integration
 Plug 'airblade/vim-gitgutter'        " Git diff in the sign column
 
 " UI Enhancements
-Plug 'altercation/vim-colors-solarized'
+Plug 'shaunsingh/solarized.nvim'
 Plug 'vim-airline/vim-airline'       " Status line
 Plug 'vim-airline/vim-airline-themes'
 Plug 'yuttie/comfortable-motion.vim' " Smooth scrolling
