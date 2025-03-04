@@ -18,7 +18,7 @@ local lspconfig = require('lspconfig')
 lspconfig.pyright.setup{}
 
 -- TypeScript/JavaScript language server
-lspconfig.tsserver.setup{}
+lspconfig.ts_ls.setup{}
 
 -- Bash language server
 lspconfig.bashls.setup{}
@@ -50,4 +50,16 @@ cmp.setup({
     { name = 'buffer' },
     { name = 'path' }
   }
+})
+
+-- Autopairs configuration
+require('nvim-autopairs').setup({
+  disable_filetype = { "TelescopePrompt" },
+  disable_in_macro = false,
+  disable_in_visualblock = false,
+  ignored_next_char = [=[[%w%%%'%[%"%.]]=],
+  enable_moveright = true,
+  enable_afterquote = true,
+  enable_check_bracket_line = true,
+  enable_bracket_in_quote = true,
 })

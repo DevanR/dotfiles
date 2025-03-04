@@ -41,7 +41,7 @@ Plug 'easymotion/vim-easymotion'     " Jump anywhere
 
 " Productivity
 Plug 'tpope/vim-surround'            " Manipulate surroundings
-Plug 'jiangmiao/auto-pairs'          " Auto-close pairs
+Plug 'windwp/nvim-autopairs'         " Auto-close pairs
 Plug 'editorconfig/editorconfig-vim' " Honor editor config files
 
 " Neovim-specific plugins
@@ -175,13 +175,13 @@ vnoremap > >gv
 if has('nvim')
   " Enable terminal mode escape
   tnoremap <Esc> <C-\><C-n>
-  
+
   " Terminal mode split navigation
   tnoremap <C-h> <C-\><C-n><C-w>h
   tnoremap <C-j> <C-\><C-n><C-w>j
   tnoremap <C-k> <C-\><C-n><C-w>k
   tnoremap <C-l> <C-\><C-n><C-w>l
-  
+
   " Incremental substitute
   set inccommand=split
 endif
