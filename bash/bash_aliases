@@ -1,0 +1,84 @@
+#!/bin/bash
+# ~/.bash_aliases
+#
+# All aliases in one place for easy management
+
+# -----------------
+# Safety Aliases
+# -----------------
+alias rm="rm -i"
+alias mv="mv -i"
+alias cp="cp -i"
+
+# -----------------
+# Listing and Navigation
+# -----------------
+export CLICOLOR=1
+export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+alias l.='ls -d .* --color=auto'
+alias ll="ls -alrtF"
+alias la="ls -A"
+alias l="ls -CF"
+alias lld="ls -ld */"
+alias dir='ls --color=auto --format=vertical'
+alias vdir='ls --color=auto --format=long'
+alias c='clear'
+alias m='less'
+alias md='mkdir'
+alias treeacl='tree -A -C -L 2'
+
+# -----------------
+# Improved CLI Tools
+# -----------------
+# Only create these if the tools are installed
+command -v nvim >/dev/null && alias vim='nvim'
+command -v bat >/dev/null && alias cat='bat'
+command -v prettyping >/dev/null && alias ping='prettyping --nolegend'
+command -v fzf >/dev/null && alias preview="fzf --preview 'bat --color \"always\" {}'"
+command -v ncdu >/dev/null && alias du="ncdu --color dark -rr -x --exclude .git --exclude node_modules"
+command -v tldr >/dev/null && alias help='tldr'
+
+# -----------------
+# Git Aliases
+# -----------------
+alias gs='git status'
+alias gd='git diff'
+alias gb='git branch'
+alias recap='git log --all --oneline --no-merges --author=devan.rehunathan@sky.uk'
+alias gwho='git shortlog -s -n'
+alias gl="git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias gg='git log --graph --full-history --all --color --pretty=format:"%x1b[31m%h%x09%x1b[32m%d%x1b[0m%x20%s"'
+
+# -----------------
+# System Management
+# -----------------
+# Brew update and upgrade
+command -v brew >/dev/null && alias brewup='brew update && brew outdated --verbose && brew upgrade && brew cleanup'
+
+# Docker
+alias rm-docker-images='docker rmi $(docker images -a -q) 2>/dev/null || echo "No Docker images to remove"'
+
+# tmux prompt bug fix
+alias tmux='tmux -u'
+
+# -----------------
+# Fun Stuff
+# -----------------
+# Matrix Terminal
+alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS conv=unblock | GREP_COLOR="1;32" grep --color "[^ ]"'
+
+# -----------------
+# Backblaze
+# -----------------
+alias backup-photos='rclone --transfers 50 sync /Volumes/SAMSUNG backblaze:photographs-master -P -vv --exclude-from ~/.rclone/exclude.conf'
+alias mount-photos='rclone mount backblaze:photographs-master ~/Downloads/photographs-master_mnt/'
+alias serve-photos='rclone serve backblaze:photographs-master'
+
+# -----------------
+# Development
+# -----------------
+# Javascript development on MAC
+alias jsc='/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/Resources/jsc'
+
+# rsync
+alias rsync-smart='rsync -axHAWXS --numeric-ids --info=progress2'

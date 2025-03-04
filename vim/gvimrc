@@ -1,0 +1,50 @@
+" ~/.gvimrc
+" GUI-specific configuration for Vim
+
+" Set GUI font
+if has('gui_macvim')
+  set guifont=Hack\ Nerd\ Font:h14
+elseif has('gui_gtk2') || has('gui_gtk3')
+  set guifont=Hack\ Nerd\ Font\ 12
+elseif has('gui_win32')
+  set guifont=Hack_NF:h12:cANSI
+endif
+
+" Remove toolbar, menubar, scrollbars
+set guioptions-=T  " Remove toolbar
+set guioptions-=m  " Remove menubar
+set guioptions-=r  " Remove right scrollbar
+set guioptions-=L  " Remove left scrollbar
+set guioptions+=e  " Use GUI tabs
+
+" Set larger line height
+set linespace=2
+
+" Set window size
+set lines=40 columns=120
+
+" No blinking cursor
+set guicursor+=a:blinkon0
+
+" Make the current line more visible in GUI
+set cursorline
+highlight CursorLine guibg=#303030
+
+" Use native OS clipboard integration
+set clipboard=unnamed
+
+" Enable full color support
+set t_Co=256
+set termguicolors
+
+" GUI-specific colorscheme settings
+colorscheme solarized
+set background=dark
+
+" No visual bell (no flashing)
+set visualbell t_vb=
+
+" Enable anti-aliased font rendering
+if has('gui_macvim')
+  set antialias
+endif

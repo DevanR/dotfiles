@@ -1,0 +1,25 @@
+#!/bin/bash
+# ~/.bash_profile
+#
+# Executed for login shells
+# This file should be kept minimal and just source ~/.bashrc
+
+# Configure default environment settings
+export LANG=en_GB.UTF-8
+export LC_ALL=en_GB.UTF-8
+export TERM=xterm-256color
+
+# Source bashrc for the main configuration
+if [ -f ~/.bashrc ]; then
+   source ~/.bashrc
+fi
+
+# Process .bash_profile.local if it exists
+if [ -f ~/.bash_local ]; then
+   source ~/.bash_local
+fi
+
+# When logging out, execute .bash_logout if it exists
+if [ -f ~/.bash_logout ]; then
+   source ~/.bash_logout
+fi

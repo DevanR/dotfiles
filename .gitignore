@@ -1,0 +1,30 @@
+# Vim
+vim/plugged/
+vim/autoload/plug.vim
+vim/swp/
+vim/.backup/
+vim/undo/
+vim/.netrwhist
+
+# Compiled files
+*.pyc
+*.o
+*.so
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sqlite
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Dotbot
+dotbot/

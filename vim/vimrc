@@ -1,0 +1,326 @@
+" ~/.vimrc
+" Improved Vim configuration
+
+" --- General Settings ---
+set nocompatible              " Be iMproved, required
+filetype off                  " Required for plugin initialization
+
+" Automatically install vim-plug if not present
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" --- Plugin Management with vim-plug ---
+call plug#begin('~/.vim/plugged')
+
+" Development
+Plug 'psf/black', { 'branch': 'stable' }
+Plug 'fisadev/vim-isort'
+Plug 'sheerun/vim-polyglot'          " Language pack
+Plug 'tmhedberg/SimpylFold'          " Code folding for Python
+Plug 'chiel92/vim-autoformat'        " Autoformat code
+Plug 'dense-analysis/ale'            " Asynchronous lint engine
+Plug 'tpope/vim-commentary'          " Comment stuff out
+Plug 'tpope/vim-fugitive'            " Git integration
+Plug 'airblade/vim-gitgutter'        " Git diff in the sign column
+
+" UI Enhancements
+Plug 'altercation/vim-colors-solarized'
+Plug 'vim-airline/vim-airline'       " Status line
+Plug 'vim-airline/vim-airline-themes'
+Plug 'yuttie/comfortable-motion.vim' " Smooth scrolling
+
+" Navigation and Search
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'              " Fuzzy finding
+Plug 'preservim/nerdtree'            " File explorer
+Plug 'easymotion/vim-easymotion'     " Jump anywhere
+
+" Productivity
+Plug 'tpope/vim-surround'            " Manipulate surroundings
+Plug 'jiangmiao/auto-pairs'          " Auto-close pairs
+Plug 'editorconfig/editorconfig-vim' " Honor editor config files
+
+call plug#end()
+
+" Auto-install missing plugins on startup
+autocmd VimEnter *
+  \ if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \|  PlugInstall --sync | q
+  \| endif
+
+" --- Basic Editing Configuration ---
+
+" General
+let mapleader = " "
+set backspace=indent,eol,start
+set history=1000
+set showcmd
+set showmode
+set autoread
+set hidden
+
+" User Interface
+set laststatus=2
+set ruler
+set wildmenu
+set wildmode=list:longest,full
+set tabpagemax=40
+set cursorline
+set number
+set relativenumber
+augroup toggle_relative_number
+  autocmd!
+  autocmd InsertEnter * :setlocal norelativenumber
+  autocmd InsertLeave * :setlocal relativenumber
+augroup END
+set noerrorbells
+set visualbell
+set background=dark
+set title
+set lazyredraw
+set signcolumn=yes
+
+" Swap, Backup and Undo
+set noswapfile
+set nobackup
+set nowb
+if !isdirectory($HOME.'/.vim/swp')
+  call mkdir($HOME.'/.vim/swp', 'p')
+endif
+if !isdirectory($HOME.'/.vim/.backup')
+  call mkdir($HOME.'/.vim/.backup', 'p')
+endif
+if !isdirectory($HOME.'/.vim/undo')
+  call mkdir($HOME.'/.vim/undo', 'p')
+endif
+set directory=$HOME/.vim/swp//
+set backupdir=$HOME/.vim/.backup//
+set undodir=$HOME/.vim/undo//
+set undofile
+
+" Indentation
+set autoindent
+filetype plugin indent on
+set tabstop=4
+set softtabstop=4
+set shiftwidth=2
+set expandtab
+set nowrap
+
+" Search
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+nnoremap n nzz
+nnoremap N Nzz
+nmap <silent> <leader>/ :nohlsearch<CR>
+
+" Text Rendering
+set encoding=utf-8
+set linebreak
+set scrolloff=3
+set sidescrolloff=5
+syntax enable
+
+" Remove trailing whitespace automatically
+augroup cleanup_group
+  autocmd!
+  autocmd BufWritePre * :%s/\s\+$//e
+augroup END
+
+" Highlight trailing whitespace
+match ErrorMsg '\s\+$'
+
+" Language-specific settings
+augroup language_settings
+  autocmd!
+  autocmd FileType python setlocal ts=4 sts=4 sw=4 expandtab
+  autocmd FileType javascript setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType html setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType css setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType json setlocal ts=2 sts=2 sw=2 expandtab
+augroup END
+
+" --- Plugin Configurations ---
+
+" NERDTree
+let g:NERDTreeShowHidden = 1
+let g:NERDTreeMinimalUI = 1
+let g:NERDTreeIgnore = ['\.pyc$', '__pycache__', '\.git$']
+let g:NERDTreeQuitOnOpen = 1
+nnoremap <leader>n :NERDTreeToggle<CR>
+nnoremap <leader>N :NERDTreeFind<CR>
+
+" FZF configuration
+set rtp+=/usr/local/opt/fzf
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+" Ripgrep integration
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview('up:60%')
+  \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+  \   <bang>0)
+
+" FZF commands
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* Find
+  \ call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --no-ignore --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+
+" FZF Mappings
+nmap <Leader>b :Buffers<CR>
+nmap <Leader>t :Tags<CR>
+nmap <Leader>o :Files<CR>
+nmap <Leader>g :Rg<CR>
+
+" Airline
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'solarized'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#ale#enabled = 1
+
+" Solarized
+let g:solarized_visibility = "high"
+let g:solarized_contrast = "high"
+if has('gui_running')
+  colorscheme solarized
+else
+  colorscheme solarized
+endif
+set background=dark
+
+" ALE
+let g:ale_linters = {
+\   'python': ['flake8', 'pylint'],
+\   'javascript': ['eslint'],
+\}
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'python': ['black', 'isort'],
+\   'javascript': ['prettier', 'eslint'],
+\}
+let g:ale_fix_on_save = 0
+nmap <Leader>af :ALEFix<CR>
+nmap <Leader>al :ALELint<CR>
+
+" Autoformat
+let g:formatter_yapf_style = 'pep8'
+nmap <leader>f :Autoformat<CR>
+
+" Black
+let g:black_virtualenv = "~/.vim/black"
+" nmap <leader>f :Black<CR>
+
+" isort
+autocmd FileType python nnoremap <leader>i :!isort %<CR>
+
+" SimplyFold
+let g:SimpylFold_docstring_preview = 0
+let g:SimpylFold_fold_docstring = 1
+let b:SimpylFold_fold_docstring = 1
+let g:SimpylFold_fold_import = 0
+let b:SimpylFold_fold_import = 0
+
+" Comfortable Motion
+let g:comfortable_motion_no_default_key_mappings = 1
+let g:comfortable_motion_friction = 80.0
+let g:comfortable_motion_air_drag = 2.0
+let g:comfortable_motion_impulse_multiplier = 1
+nnoremap <silent> <C-d> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
+nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
+nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>
+
+" EasyMotion
+let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_smartcase = 1
+nmap <Leader>j <Plug>(easymotion-j)
+nmap <Leader>k <Plug>(easymotion-k)
+nmap <Leader>w <Plug>(easymotion-w)
+nmap <Leader>W <Plug>(easymotion-W)
+nmap <Leader>e <Plug>(easymotion-e)
+nmap <Leader>E <Plug>(easymotion-E)
+nmap <Leader>b <Plug>(easymotion-b)
+nmap <Leader>B <Plug>(easymotion-B)
+nmap <Leader>s <Plug>(easymotion-s2)
+
+" --- Key mappings ---
+
+" Save shortcut with leader w
+noremap <Leader>w :w<CR>
+
+" Python debugger shortcut
+map <Leader>d otry:<CR>except BaseException as error:<CR>import pdb<CR>pdb.set_trace()<CR><ESC>
+
+" Use space to toggle folds
+nnoremap <space> za
+vnoremap <space> zf
+
+" Window navigation
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+nnoremap <c-h> <c-w>h
+nnoremap <c-l> <c-w>l
+
+" Force using hjkl
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
+
+" Mouse support
+set mouse=a
+
+" Save as sudo
+cmap w!! w !sudo tee > /dev/null %
+
+" Semicolon as colon for command mode
+nnoremap ; :
+
+" Better line navigation
+nnoremap j gj
+nnoremap k gk
+
+" Visual mode indentation
+vnoremap < <gv
+vnoremap > >gv
+
+" Visual mode movements
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
+" Jump to start and end of line using the home row keys
+map H ^
+map L $
+
+" Quick buffer navigation
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+
+" Reselect visual block after indent/outdent
+vnoremap < <gv
+vnoremap > >gv
+
+" Center view on searches
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Enable function to format paragraphs
+noremap <Leader>a gqap
+
+" Load all plugins now
+packloadall
+
+" Load all help docs
+silent! helptags ALL

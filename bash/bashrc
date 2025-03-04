@@ -1,0 +1,106 @@
+#!/bin/bash
+# ~/.bashrc
+#
+# Core configuration for both login and non-login shells
+
+# If not running interactively, don't do anything
+[ -z "$PS1" ] && return
+
+# -----------------
+# PATH Configuration
+# -----------------
+# Priority: lowest to highest (right to left)
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# -----------------
+# Shell Options
+# -----------------
+set -o noclobber  # Prevent file overwrite with >
+shopt -s checkwinsize  # Update window size after each command
+shopt -s histappend  # Append to history file
+
+# -----------------
+# History Configuration
+# -----------------
+HISTCONTROL=ignoreboth  # Ignore duplicate lines and lines starting with space
+HISTSIZE=10000
+HISTFILESIZE=20000
+HISTTIMEFORMAT="%d/%m/%y %T "  # Add timestamps to history
+
+# -----------------
+# Default Editor
+# -----------------
+export EDITOR='vim'
+export VISUAL='vim'
+
+# -----------------
+# Prompt Configuration
+# -----------------
+# Add git branch to prompt if available
+if [ -f "$(brew --prefix 2>/dev/null)/etc/bash_completion.d/git-prompt.sh" ]; then
+  source "$(brew --prefix)/etc/bash_completion.d/git-prompt.sh"
+  PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\[\033[01;33m\]$(__git_ps1 " (%s)")\[\033[00m\]\$ '
+else
+  PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+fi
+
+# Set tab title to current directory
+export PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD##*/}\007"'
+
+# -----------------
+# External Tools
+# -----------------
+# Bash completion
+if [ -f "$(brew --prefix 2>/dev/null)/etc/bash_completion" ]; then
+  source "$(brew --prefix)/etc/bash_completion"
+fi
+
+# fzf configuration
+if [ -f ~/.fzf.bash ]; then
+  source ~/.fzf.bash
+  export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
+  export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
+fi
+
+# -----------------
+# Development Environment
+# -----------------
+# pyenv
+if command -v pyenv >/dev/null; then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+fi
+
+# rbenv
+if command -v rbenv >/dev/null; then
+  eval "$(rbenv init -)"
+fi
+
+# nvm
+if [ -d "$HOME/.nvm" ]; then
+  export NVM_DIR="$HOME/.nvm"
+  if [ -s "$(brew --prefix 2>/dev/null)/opt/nvm/nvm.sh" ]; then
+    source "$(brew --prefix)/opt/nvm/nvm.sh"
+  elif [ -s "$NVM_DIR/nvm.sh" ]; then
+    source "$NVM_DIR/nvm.sh"
+  fi
+fi
+
+# -----------------
+# Load Additional Configuration
+# -----------------
+# Load aliases
+if [ -f ~/.bash_aliases ]; then
+  source ~/.bash_aliases
+fi
+
+# Load functions
+if [ -f ~/.bash_functions ]; then
+  source ~/.bash_functions
+fi
+
+# Load local machine-specific configuration
+if [ -f ~/.bash_local ]; then
+  source ~/.bash_local
+fi

@@ -1,0 +1,89 @@
+#!/bin/bash
+# ~/.bash_functions
+#
+# All functions in one place for easy management
+
+# -----------------
+# Extract - Handle common archive formats
+# -----------------
+extract() {
+    if [ -f "$1" ] ; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar e "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *)           echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# -----------------
+# mkcd - Create a directory and change into it
+# -----------------
+mkcd() {
+    mkdir -p "$1" && cd "$1" || return
+}
+
+# -----------------
+# up - Go up N directories
+# -----------------
+up() {
+    local d=""
+    local limit=$1
+    
+    # Default to 1 level if no number specified
+    if [ -z "$limit" ] || [ "$limit" -le 0 ]; then
+        limit=1
+    fi
+    
+    for ((i=1;i<=limit;i++)); do
+        d="$d../"
+    done
+    
+    # Trim the last slash
+    d=${d%/}
+    
+    # No directory, go home
+    if [ -z "$d" ]; then
+        d=~
+    fi
+    
+    cd "$d" || return
+}
+
+# -----------------
+# weather - Get the weather
+# -----------------
+weather() {
+    local city="${1:-London}"
+    curl -s "wttr.in/$city?format=3"
+}
+
+# -----------------
+# cheat - Get a cheatsheet for a command
+# -----------------
+cheat() {
+    curl "cheat.sh/$1"
+}
+
+# -----------------
+# update_dotfiles - Pull the latest version of dotfiles
+# -----------------
+update_dotfiles() {
+    local current_dir=$(pwd)
+    echo "Updating dotfiles..."
+    cd ~/.bash || return
+    git pull
+    cd "$current_dir" || return
+    echo "Dotfiles updated!"
+}
