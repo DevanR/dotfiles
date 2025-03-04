@@ -1,27 +1,26 @@
 # Dotfiles
 
-This repository contains my personal dotfiles, managed with [Dotbot](https://github.com/anishathalye/dotbot).
+My personal dotfiles managed with Dotbot, supporting both Vim and Neovim.
 
 ## Contents
 
 - **Bash**: Shell configuration files
-- **Vim**: Vim configuration and plugins
-- **Tmux**: Tmux configuration
+- **Vim**: Traditional Vim configuration and plugins
+- **Neovim**: Modern Neovim configuration with LSP support
+- **Tmux**: Terminal multiplexer configuration
 
 ## Installation
 
 1. Clone this repository:
-
-```bash
-git clone https://github.com/username/dotfiles.git ~/.dotfiles
-cd ~/.dotfiles
-```
+   ```bash
+   git clone --recursive https://github.com/yourusername/dotfiles.git ~/dotfiles
+   cd ~/dotfiles
+   ```
 
 2. Run the install script:
-
-```bash
-./install
-```
+   ```bash
+   ./install
+   ```
 
 ## File Structure
 
@@ -31,64 +30,156 @@ dotfiles/
 │   ├── bash_profile
 │   ├── bashrc
 │   ├── bash_aliases
-│   └── bash_functions
-├── tmux/
-│   └── tmux.conf
+│   ├── bash_functions
+│   └── bash_local.template
 ├── vim/
 │   ├── vimrc
-│   └── gvimrc
+│   ├── gvimrc
+│   ├── ftdetect/
+│   └── syntax/
+├── nvim/
+│   ├── init.vim
+│   ├── lua/
+│   ├── ftdetect/
+│   └── syntax/
+├── tmux/
+│   └── tmux.conf
 ├── install.conf.yaml
 ├── install
+├── .gitignore
 └── README.md
 ```
 
-## Customization
+## Component Overviews
 
-You can customize your settings for specific machines by creating a `~/.bash_local` file, which will be automatically sourced if it exists.
-
-## Updating
-
-To update your dotfiles:
-
-```bash
-cd ~/.dotfiles
-git pull
-./install
-```
-
-## Adding New Files
-
-1. Add new dotfiles to the appropriate directory
-2. Update `install.conf.yaml` to create a symlink for the new file
-3. Run `./install` to create the new symlinks
-
-## Components
-
-### Bash
+### Bash Configuration
 
 The bash configuration is organized into several files:
 - `bash_profile`: Login shell configuration
 - `bashrc`: Non-login shell configuration
 - `bash_aliases`: All aliases
 - `bash_functions`: All functions
+- `bash_local.template`: Template for machine-specific settings
 
-### Vim
+Features:
+- Clean prompt with git integration
+- Useful aliases for common operations
+- Helper functions for productivity
+- Support for local customizations
 
-The Vim configuration uses vim-plug for plugin management and includes:
-- Modern development plugins
+### Vim Configuration
+
+A traditional Vim setup with modern plugins:
+- Plugin management with vim-plug
 - Syntax highlighting and linting
-- Fuzzy file finding with FZF
+- File navigation and fuzzy finding
 - Git integration
-- Code formatting
+- Code completion
 
-### Tmux
+### Neovim Configuration
 
-The Tmux configuration includes:
-- Vim-like keybindings
+An enhanced Neovim setup that builds upon Vim:
+- Modern LSP (Language Server Protocol) integration
+- Tree-sitter for improved syntax highlighting
+- Native terminal support
+- Lua-based plugin configurations
+- Auto-completion with nvim-cmp
+
+After installation, open Neovim and run:
+```
+:PlugInstall
+:TSUpdate
+```
+
+Key plugins:
+- nvim-treesitter for better syntax highlighting
+- nvim-lspconfig for Language Server integration
+- nvim-cmp for advanced autocompletion
+- fzf/telescope for fuzzy finding
+- Plus all traditional Vim plugins
+
+### Tmux Configuration
+
+Modern tmux configuration with:
+- Vi-style keybindings
 - Mouse support
 - Custom status bar
-- Improved colors
-- Sensible defaults
+- Intuitive window and pane management
+- Plugin support
+
+## Customization
+
+### Machine-Specific Settings
+
+Create a `~/.bash_local` file for machine-specific bash settings. This file is automatically sourced if it exists.
+
+### Neovim LSP
+
+To add additional language servers to Neovim:
+
+1. Install the language server:
+   ```bash
+   # Example: Python
+   pip install pyright
+   
+   # Example: JavaScript/TypeScript
+   npm install -g typescript typescript-language-server
+   ```
+
+2. Add the configuration to `~/.config/nvim/lua/plugins.lua`:
+   ```lua
+   -- Example for adding Ruby language server
+   lspconfig.solargraph.setup{}
+   ```
+
+## Updating
+
+To update your dotfiles:
+
+1. Pull the latest changes:
+   ```bash
+   cd ~/dotfiles
+   git pull
+   ```
+
+2. Run the installer again:
+   ```bash
+   ./install
+   ```
+
+## Adding New Dotfiles
+
+1. Add your new configuration file to the appropriate directory
+2. Update `install.conf.yaml` to include the symlink
+3. Run `./install` to create the symlink
+
+## Troubleshooting
+
+### Vim Plugin Installation Issues
+
+If you encounter errors during plugin installation:
+
+1. Try installing plugins manually:
+   ```
+   vim +PlugInstall +qall
+   ```
+   
+2. For Neovim, use:
+   ```
+   nvim +PlugInstall +qall
+   ```
+
+3. Check for errors when starting Vim/Neovim without plugins:
+   ```
+   vim -u NONE
+   nvim -u NONE
+   ```
+
+### Common Issues
+
+- **PATH issues**: Make sure required tools are in your PATH
+- **Permissions**: Ensure all directories have proper permissions
+- **Missing dependencies**: Some plugins require external tools
 
 ## License
 
