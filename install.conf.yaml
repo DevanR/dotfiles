@@ -13,6 +13,10 @@
     ~/.bash_aliases: bash/bash_aliases
     ~/.bash_functions: bash/bash_functions
     
+    # Zsh Files
+    ~/.zshrc: zsh/zshrc
+    ~/.zprofile: zsh/zprofile
+    
     # Vim Files (keeping for compatibility)
     ~/.vim: vim
     ~/.vimrc: vim/vimrc
@@ -30,6 +34,7 @@
     - ~/.vim/undo
     - ~/.config/nvim/undo
     - ~/.local/share/nvim/site/autoload
+    - ~/.zsh_history
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]

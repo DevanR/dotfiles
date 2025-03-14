@@ -1,0 +1,44 @@
+# ~/.zprofile
+# Zsh login shell configuration
+
+# Configure default environment settings
+export LANG=en_GB.UTF-8
+export LC_ALL=en_GB.UTF-8
+export TERM=xterm-256color
+
+# PATH Configuration
+# Add Homebrew paths for Apple Silicon Mac
+if [[ -d /opt/homebrew/bin ]]; then
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+fi
+
+# Add Homebrew paths for Intel Mac
+if [[ -d /usr/local/bin ]]; then
+    export PATH="/usr/local/bin:/usr/local/sbin:$PATH"
+fi
+
+# Add standard system paths
+export PATH="/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+
+# Define a function to handle Bash-specific commands when sourcing Bash files
+bash_command() {
+    # Silently ignore Bash-specific commands
+    case "$1" in
+        shopt) return 0 ;;
+        *)     command "$@" ;;
+    esac
+}
+
+# Create aliases for Bash-specific commands
+alias shopt='bash_command shopt'
+
+# Source Bash profile for compatibility
+if [ -f ~/.bash_profile ]; then
+    # Source only the environment variables, not the interactive shell parts
+    source ~/.bash_profile
+fi
+
+# Source local Zsh profile if it exists
+if [ -f ~/.zsh_local_profile ]; then
+    source ~/.zsh_local_profile
+fi 

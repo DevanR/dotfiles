@@ -1,0 +1,111 @@
+# ~/.zshrc
+# Zsh configuration file
+
+# Enable Bash-like history
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+
+# Set up Zsh-specific options
+setopt autocd
+setopt extendedglob
+setopt nomatch
+setopt notify
+unsetopt beep
+
+# Zsh equivalents of Bash options
+setopt noclobber        # Equivalent to Bash's 'set -o noclobber'
+setopt inc_append_history  # Equivalent to Bash's 'shopt -s histappend'
+# No direct equivalent for 'shopt -s checkwinsize', but Zsh handles window size changes automatically
+
+# History configuration (similar to Bash)
+setopt hist_ignore_dups   # Ignore duplicate commands
+setopt hist_ignore_space  # Ignore commands starting with space
+# Combined, these provide similar functionality to HISTCONTROL=ignoreboth in Bash
+
+# Enable Bash-like completion
+autoload -Uz compinit
+compinit
+
+# Homebrew configuration
+if [[ -x /opt/homebrew/bin/brew ]]; then
+    # Apple Silicon Mac
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+    # Intel Mac
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Set up Homebrew completions if available
+if type brew &>/dev/null; then
+    FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+    autoload -Uz compinit
+    compinit
+fi
+
+# Define a function to handle Bash-specific commands when sourcing Bash files
+bash_command() {
+    # Silently ignore Bash-specific commands
+    case "$1" in
+        shopt) return 0 ;;
+        *)     command "$@" ;;
+    esac
+}
+
+# Create aliases for Bash-specific commands
+alias shopt='bash_command shopt'
+
+# Source Bash aliases and functions for compatibility
+if [ -f ~/.bash_aliases ]; then
+    source ~/.bash_aliases
+fi
+
+if [ -f ~/.bash_functions ]; then
+    source ~/.bash_functions
+fi
+
+# Set prompt similar to Bash
+PS1='%F{green}%n@%m%f:%F{blue}%~%f$ '
+
+# Tmux configuration
+# Ensure tmux is properly set up
+if command -v tmux >/dev/null 2>&1; then
+    # Unalias any existing tmux alias to avoid conflicts
+    unalias tmux 2>/dev/null || true
+    
+    # Create the tmux alias with UTF-8 support
+    alias tmux='tmux -u'
+    
+    # Add tmux helper functions
+    
+    # Start or attach to tmux session
+    tm() {
+        if [[ -z "$1" ]]; then
+            # No session name provided, attach to existing or create new
+            tmux attach || tmux new-session
+        else
+            # Session name provided, attach to it or create it
+            tmux attach -t "$1" || tmux new-session -s "$1"
+        fi
+    }
+    
+    # List tmux sessions
+    tls() {
+        tmux list-sessions
+    }
+    
+    # Kill tmux session
+    tkill() {
+        if [[ -z "$1" ]]; then
+            echo "Please provide a session name to kill"
+            return 1
+        fi
+        tmux kill-session -t "$1"
+    }
+fi
+
+# Source local Zsh configuration if it exists
+if [ -f ~/.zsh_local ]; then
+    source ~/.zsh_local
+fi 

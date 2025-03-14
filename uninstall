@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+set -e
+
+BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG="install.conf.yaml"
+
+# Function to confirm action
+confirm() {
+    read -p "$1 (y/n): " -n 1 -r
+    echo
+    [[ $REPLY =~ ^[Yy]$ ]]
+}
+
+echo "Dotfiles Uninstaller"
+echo "===================="
+echo "This script will remove symbolic links created by the dotfiles installer."
+echo
+
+if confirm "Do you want to proceed with uninstallation?"; then
+    # Define the symbolic links to remove based on install.conf.yaml
+    # These are hardcoded to avoid parsing issues with grep
+    links_to_remove=(
+        # Bash Files
+        "$HOME/.bash_profile"
+        "$HOME/.bashrc"
+        "$HOME/.bash_aliases"
+        "$HOME/.bash_functions"
+        
+        # Zsh Files
+        "$HOME/.zshrc"
+        "$HOME/.zprofile"
+        
+        # Vim Files
+        "$HOME/.vim"
+        "$HOME/.vimrc"
+        "$HOME/.gvimrc"
+        
+        # Neovim Files
+        "$HOME/.config/nvim"
+        
+        # Tmux Files
+        "$HOME/.tmux.conf"
+    )
+    
+    # Remove each link
+    for link in "${links_to_remove[@]}"; do
+        if [ -L "$link" ]; then
+            echo "Removing link: $link"
+            rm "$link"
+        else
+            echo "Link not found: $link (already removed or not a symlink)"
+        fi
+    done
+    
+    # Clean up directories
+    if confirm "Do you want to remove directories created during installation?"; then
+        # These directories were created during installation
+        dirs_to_remove=(
+            "$HOME/.vim/swp"
+            "$HOME/.vim/.backup"
+            "$HOME/.vim/undo"
+            "$HOME/.config/nvim/undo"
+            "$HOME/.local/share/nvim/site/autoload"
+            "$HOME/.zsh_history"
+        )
+        
+        for dir in "${dirs_to_remove[@]}"; do
+            if [ -d "$dir" ]; then
+                echo "Removing directory: $dir"
+                rm -rf "$dir"
+            fi
+        done
+    fi
+    
+    # Remove vim-plug
+    if confirm "Do you want to remove vim-plug?"; then
+        vim_plug="$HOME/.local/share/nvim/site/autoload/plug.vim"
+        if [ -f "$vim_plug" ]; then
+            echo "Removing vim-plug: $vim_plug"
+            rm "$vim_plug"
+        fi
+    fi
+    
+    echo "Uninstallation completed successfully!"
+else
+    echo "Uninstallation cancelled."
+fi 

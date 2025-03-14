@@ -4,14 +4,70 @@ set -e
 
 CONFIG="install.conf.yaml"
 DOTBOT_DIR="dotbot"
-
 DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-cd "${BASEDIR}"
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
 
-if [ ! -d "${DOTBOT_DIR}" ]; then
-    git clone https://github.com/anishathalye/dotbot.git "${DOTBOT_DIR}"
-fi
+# Function to ensure Python and pip are available
+ensure_python() {
+    if command_exists python3; then
+        PYTHON="python3"
+    elif command_exists python; then
+        PYTHON="python"
+    else
+        echo "Error: Python is not installed. Please install Python 3."
+        exit 1
+    fi
+    
+    echo "Using Python: $($PYTHON --version)"
+    
+    # Ensure pip is available
+    if ! $PYTHON -m pip --version >/dev/null 2>&1; then
+        echo "Error: pip is not available for $PYTHON"
+        echo "Please install pip for your Python installation."
+        exit 1
+    fi
+    
+    echo "Using pip: $($PYTHON -m pip --version)"
+}
 
-"${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+# Function to ensure required Python packages are installed
+ensure_dependencies() {
+    echo "Checking for required Python packages..."
+    
+    # Check if PyYAML is installed
+    if ! $PYTHON -c "import yaml" >/dev/null 2>&1; then
+        echo "Installing PyYAML..."
+        $PYTHON -m pip install pyyaml
+    else
+        echo "PyYAML is already installed."
+    fi
+}
+
+# Main installation process
+main() {
+    cd "${BASEDIR}"
+    
+    # Clone Dotbot if it doesn't exist
+    if [ ! -d "${DOTBOT_DIR}" ]; then
+        echo "Cloning Dotbot..."
+        git clone https://github.com/anishathalye/dotbot.git "${DOTBOT_DIR}"
+    fi
+    
+    # Ensure Python and dependencies are available
+    ensure_python
+    ensure_dependencies
+    
+    # Run Dotbot
+    echo "Running Dotbot..."
+    $PYTHON "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+    
+    echo "Installation completed successfully!"
+}
+
+# Run the main function
+main
