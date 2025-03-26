@@ -7,15 +7,15 @@
 - clean: ['~', '~/.config/nvim']
 
 - link:
-    # Bash Files
+    # Zsh Files (Primary shell)
+    ~/.zshrc: zsh/zshrc
+    ~/.zprofile: zsh/zprofile
+    
+    # Bash Files (Secondary shell)
     ~/.bash_profile: bash/bash_profile
     ~/.bashrc: bash/bashrc
     ~/.bash_aliases: bash/bash_aliases
     ~/.bash_functions: bash/bash_functions
-    
-    # Zsh Files
-    ~/.zshrc: zsh/zshrc
-    ~/.zprofile: zsh/zprofile
     
     # Vim Files (keeping for compatibility)
     ~/.vim: vim

@@ -4,7 +4,8 @@ My personal dotfiles managed with Dotbot, supporting both Vim and Neovim.
 
 ## Contents
 
-- **Bash**: Shell configuration files
+- **Zsh**: Primary shell configuration files (with bash compatibility)
+- **Bash**: Secondary shell configuration files (for compatibility)
 - **Vim**: Traditional Vim configuration and plugins
 - **Neovim**: Modern Neovim configuration with LSP support
 - **Tmux**: Terminal multiplexer configuration
@@ -26,6 +27,9 @@ My personal dotfiles managed with Dotbot, supporting both Vim and Neovim.
 
 ```
 dotfiles/
+├── zsh/
+│   ├── zshrc
+│   └── zprofile
 ├── bash/
 │   ├── bash_profile
 │   ├── bashrc
@@ -52,9 +56,17 @@ dotfiles/
 
 ## Component Overviews
 
-### Bash Configuration
+### Shell Configuration
 
-The bash configuration is organized into several files:
+The configuration supports both Zsh (primary) and Bash (secondary):
+
+#### Zsh Configuration
+- `zshrc`: Non-login shell configuration
+- `zprofile`: Login shell configuration
+- Includes compatibility layer for Bash commands
+- Modern shell features and improved completion
+
+#### Bash Configuration (for compatibility)
 - `bash_profile`: Login shell configuration
 - `bashrc`: Non-login shell configuration
 - `bash_aliases`: All aliases
@@ -66,6 +78,7 @@ Features:
 - Useful aliases for common operations
 - Helper functions for productivity
 - Support for local customizations
+- Full compatibility with existing Bash commands
 
 ### Vim Configuration
 

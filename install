@@ -6,6 +6,7 @@ CONFIG="install.conf.yaml"
 DOTBOT_DIR="dotbot"
 DOTBOT_BIN="bin/dotbot"
 BASEDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_DIR="${BASEDIR}/.venv"
 
 # Function to check if a command exists
 command_exists() {
@@ -24,28 +25,28 @@ ensure_python() {
     fi
     
     echo "Using Python: $($PYTHON --version)"
-    
-    # Ensure pip is available
-    if ! $PYTHON -m pip --version >/dev/null 2>&1; then
-        echo "Error: pip is not available for $PYTHON"
-        echo "Please install pip for your Python installation."
-        exit 1
-    fi
-    
-    echo "Using pip: $($PYTHON -m pip --version)"
 }
 
-# Function to ensure required Python packages are installed
-ensure_dependencies() {
-    echo "Checking for required Python packages..."
+# Function to set up virtual environment and install dependencies
+setup_venv() {
+    echo "Setting up virtual environment..."
     
-    # Check if PyYAML is installed
-    if ! $PYTHON -c "import yaml" >/dev/null 2>&1; then
-        echo "Installing PyYAML..."
-        $PYTHON -m pip install pyyaml
-    else
-        echo "PyYAML is already installed."
+    # Create virtual environment if it doesn't exist
+    if [ ! -d "${VENV_DIR}" ]; then
+        $PYTHON -m venv "${VENV_DIR}"
     fi
+    
+    # Activate virtual environment
+    source "${VENV_DIR}/bin/activate"
+    
+    # Upgrade pip in virtual environment
+    python -m pip install --upgrade pip
+    
+    # Install required packages in virtual environment
+    echo "Installing required Python packages..."
+    python -m pip install pyyaml
+    
+    echo "Virtual environment setup complete."
 }
 
 # Main installation process
@@ -58,13 +59,18 @@ main() {
         git clone https://github.com/anishathalye/dotbot.git "${DOTBOT_DIR}"
     fi
     
-    # Ensure Python and dependencies are available
+    # Ensure Python is available
     ensure_python
-    ensure_dependencies
+    
+    # Set up virtual environment and install dependencies
+    setup_venv
     
     # Run Dotbot
     echo "Running Dotbot..."
-    $PYTHON "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+    python "${BASEDIR}/${DOTBOT_DIR}/${DOTBOT_BIN}" -d "${BASEDIR}" -c "${CONFIG}" "${@}"
+    
+    # Deactivate virtual environment
+    deactivate
     
     echo "Installation completed successfully!"
 }

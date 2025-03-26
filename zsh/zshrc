@@ -105,6 +105,24 @@ if command -v tmux >/dev/null 2>&1; then
     }
 fi
 
+# fzf configuration
+if command -v fzf >/dev/null 2>&1; then
+    # Source fzf key bindings for zsh
+    if [ -f ~/.fzf.zsh ]; then
+        source ~/.fzf.zsh
+    fi
+    
+    # Set up fzf environment variables
+    export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
+    export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
+    
+    # Add fzf to path if installed via Homebrew
+    if type brew &>/dev/null; then
+        export FZF_BASE="$(brew --prefix)/opt/fzf"
+        [[ $- == *i* ]] && source "${FZF_BASE}/shell/completion.zsh" 2> /dev/null
+    fi
+fi
+
 # Source local Zsh configuration if it exists
 if [ -f ~/.zsh_local ]; then
     source ~/.zsh_local

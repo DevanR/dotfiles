@@ -57,9 +57,12 @@ fi
 
 # fzf configuration
 if [ -f ~/.fzf.bash ]; then
-  source ~/.fzf.bash
-  export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
-  export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
+    # Only source fzf bash bindings if we're actually in bash
+    if [ -n "$BASH_VERSION" ]; then
+        source ~/.fzf.bash
+        export FZF_PREVIEW_COMMAND="bat --style=numbers,changes --wrap never --color always {} || cat {} || tree -C {}"
+        export FZF_CTRL_T_OPTS="--min-height 30 --preview-window down:60% --preview-window noborder --preview '($FZF_PREVIEW_COMMAND) 2> /dev/null'"
+    fi
 fi
 
 # -----------------
