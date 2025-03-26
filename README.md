@@ -14,7 +14,7 @@ My personal dotfiles managed with Dotbot, supporting both Vim and Neovim.
 
 1. Clone this repository:
    ```bash
-   git clone --recursive https://github.com/yourusername/dotfiles.git ~/dotfiles
+   git clone --recursive https://github.com/devanr/dotfiles.git ~/dotfiles
    cd ~/dotfiles
    ```
 
