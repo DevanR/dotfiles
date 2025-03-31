@@ -70,7 +70,7 @@ alias matrix='LC_ALL=C tr -c "[:digit:]" " " < /dev/urandom | dd cbs=$COLUMNS co
 # -----------------
 # Backblaze
 # -----------------
-alias backup-photos='rclone --transfers 50 sync /Volumes/SAMSUNG backblaze:photographs-master -P -vv --exclude-from ~/.rclone/exclude.conf'
+alias backup-photos='rclone --transfers 50 sync /Volumes/Backup\ 1/SAMSUNG backblaze:photographs-master -P -vv --exclude-from ~/.rclone/exclude.conf'
 alias mount-photos='rclone mount backblaze:photographs-master ~/Downloads/photographs-master_mnt/'
 alias serve-photos='rclone serve backblaze:photographs-master'
 
@@ -82,3 +82,4 @@ alias jsc='/System/Library/Frameworks/JavaScriptCore.framework/Versions/Current/
 
 # rsync
 alias rsync-smart='rsync -axHAWXS --numeric-ids --info=progress2'
+alias immich-copy='rsync -av "/Volumes/Backup 1/SAMSUNG/" dr@192.168.86.20:/mnt/immich-media'
