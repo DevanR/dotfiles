@@ -127,3 +127,6 @@ fi
 if [ -f ~/.zsh_local ]; then
     source ~/.zsh_local
 fi 
+
+export PATH=$PATH:/Users/devan/.local/bin
+export PATH="$HOME/go/bin:$PATH"
