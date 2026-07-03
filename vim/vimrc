@@ -27,7 +27,7 @@ Plug 'tpope/vim-fugitive'            " Git integration
 Plug 'airblade/vim-gitgutter'        " Git diff in the sign column
 
 " UI Enhancements
-Plug 'altercation/vim-colors-solarized'
+Plug 'lifepillar/vim-solarized8'     " Truecolor Solarized (maintained)
 Plug 'vim-airline/vim-airline'       " Status line
 Plug 'vim-airline/vim-airline-themes'
 Plug 'yuttie/comfortable-motion.vim' " Smooth scrolling
@@ -82,22 +82,16 @@ set background=dark
 set title
 set lazyredraw
 set signcolumn=yes
+set updatetime=100            " faster gitgutter / CursorHold refresh (default 4000ms)
 
 " Swap, Backup and Undo
+" Swap and backup are disabled; only persistent undo is kept.
 set noswapfile
 set nobackup
 set nowb
-if !isdirectory($HOME.'/.vim/swp')
-  call mkdir($HOME.'/.vim/swp', 'p')
-endif
-if !isdirectory($HOME.'/.vim/.backup')
-  call mkdir($HOME.'/.vim/.backup', 'p')
-endif
 if !isdirectory($HOME.'/.vim/undo')
   call mkdir($HOME.'/.vim/undo', 'p')
 endif
-set directory=$HOME/.vim/swp//
-set backupdir=$HOME/.vim/.backup//
 set undodir=$HOME/.vim/undo//
 set undofile
 
@@ -115,8 +109,6 @@ set incsearch
 set hlsearch
 set ignorecase
 set smartcase
-nnoremap n nzz
-nnoremap N Nzz
 nmap <silent> <leader>/ :nohlsearch<CR>
 
 " Text Rendering
@@ -186,19 +178,23 @@ nmap <Leader>g :Rg<CR>
 " Airline
 let g:airline_powerline_fonts = 1
 let g:airline_theme = 'solarized'
+let g:airline_solarized_bg = 'dark'   " force dark variant under termguicolors
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#ale#enabled = 1
 
-" Solarized
-let g:solarized_visibility = "high"
-let g:solarized_contrast = "high"
-if has('gui_running')
-  colorscheme solarized
-else
-  colorscheme solarized
+" Solarized (truecolor via solarized8)
+" Render real RGB colors instead of leaning on the terminal's 16 ANSI slots,
+" so the scheme is independent of Ghostty's palette.
+if has('termguicolors')
+  " Ensure truecolor escapes are set even under a non-xterm TERM (e.g. tmux).
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+  set termguicolors
 endif
 set background=dark
+let g:solarized_extra_hi_groups = 1
+colorscheme solarized8_high
 
 " ALE
 let g:ale_linters = {
@@ -242,18 +238,18 @@ nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impu
 nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
 nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>
 
-" EasyMotion
+" EasyMotion (double-leader prefix so it doesn't clash with FZF/save mappings)
 let g:EasyMotion_do_mapping = 0
 let g:EasyMotion_smartcase = 1
-nmap <Leader>j <Plug>(easymotion-j)
-nmap <Leader>k <Plug>(easymotion-k)
-nmap <Leader>w <Plug>(easymotion-w)
-nmap <Leader>W <Plug>(easymotion-W)
-nmap <Leader>e <Plug>(easymotion-e)
-nmap <Leader>E <Plug>(easymotion-E)
-nmap <Leader>b <Plug>(easymotion-b)
-nmap <Leader>B <Plug>(easymotion-B)
-nmap <Leader>s <Plug>(easymotion-s2)
+nmap <Leader><Leader>j <Plug>(easymotion-j)
+nmap <Leader><Leader>k <Plug>(easymotion-k)
+nmap <Leader><Leader>w <Plug>(easymotion-w)
+nmap <Leader><Leader>W <Plug>(easymotion-W)
+nmap <Leader><Leader>e <Plug>(easymotion-e)
+nmap <Leader><Leader>E <Plug>(easymotion-E)
+nmap <Leader><Leader>b <Plug>(easymotion-b)
+nmap <Leader><Leader>B <Plug>(easymotion-B)
+nmap <Leader><Leader>s <Plug>(easymotion-s2)
 
 " --- Key mappings ---
 
@@ -263,9 +259,9 @@ noremap <Leader>w :w<CR>
 " Python debugger shortcut
 map <Leader>d otry:<CR>except BaseException as error:<CR>import pdb<CR>pdb.set_trace()<CR><ESC>
 
-" Use space to toggle folds
-nnoremap <space> za
-vnoremap <space> zf
+" Toggle/create folds (moved off bare <space> so it doesn't stall the leader)
+nnoremap <leader>z za
+vnoremap <leader>z zf
 
 " Window navigation
 nnoremap <c-j> <c-w>j
@@ -307,10 +303,6 @@ map L $
 " Quick buffer navigation
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
-
-" Reselect visual block after indent/outdent
-vnoremap < <gv
-vnoremap > >gv
 
 " Center view on searches
 nnoremap n nzzzv
