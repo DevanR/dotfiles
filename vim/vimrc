@@ -303,6 +303,10 @@ map L $
 " Quick buffer navigation
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
+" Toggle to last-used buffer (<leader>d is taken by the pdb snippet)
+nnoremap <leader><Tab> :b#<CR>
+" Close current buffer
+nnoremap <leader>q :bd<CR>
 
 " Center view on searches
 nnoremap n nzzzv
